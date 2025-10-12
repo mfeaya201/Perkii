@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:perkii/pages/home_page.dart';
-//import 'package:perkii/pages/login_screen.dart';
+import 'package:perkii/pages/onboarding_page.dart';
+import 'package:perkii/pages/login_screen.dart';
 
 
 void main() {
@@ -15,7 +16,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp( 
       debugShowCheckedModeBanner: false,
-      home: HomePage(),
+      home: OnBoard(),
     
     );
   }
