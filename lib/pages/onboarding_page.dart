@@ -1,4 +1,5 @@
-import 'package:flutter/material.dart' ; 
+import 'package:flutter/material.dart';
+import 'package:perkii/pages/login_screen.dart';
 
 class OnBoard extends StatefulWidget {
   const OnBoard({super.key});
@@ -11,75 +12,140 @@ class _OnBoardState extends State<OnBoard> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          Padding(
-            padding: const EdgeInsets.only(top: 80),
-            child: Text(
-              'Perkii',
-              style: TextStyle(
-                fontSize: 40,
-                fontWeight: FontWeight.bold,
-                fontFamily: 'cursive',
-                color: Colors.deepOrangeAccent,
+      backgroundColor: Colors.black,
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 30),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Spacer(flex: 2),
+              
+              //Logo
+              Center(
+                child: Container(
+                  width: 80,
+                  height: 80,
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: Center(
+                    child: Text(
+                      'P',
+                      style: TextStyle(
+                        fontSize: 48,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black,
+                      ),
+                    ),
+                  ),
+                ),
               ),
+              
+              SizedBox(height: 40),
+              
+              //App name
+              Center(
+                child: Text(
+                  'Perkii',
+                  style: TextStyle(
+                    fontSize: 48,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                    letterSpacing: 2,
+                  ),
+                ),
               ),
+              
+              Spacer(flex: 1),
+              
+              //Main heading
+              Text(
+                'Rewards Made\nSimple',
+                style: TextStyle(
+                  fontSize: 42,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                  height: 1.2,
+                ),
+              ),
+              
+              SizedBox(height: 20),
+              
+              // Subheading
+              Text(
+                'Join the loyalty rewards world and start earning perks with every purchase.',
+                style: TextStyle(
+                  fontSize: 18,
+                  color: Colors.grey[600],
+                  fontWeight: FontWeight.w400,
+                  height: 1.5,
+                ),
+              ),
+              
+              Spacer(flex: 2),
+              
+              //Get started button
+              SizedBox(
+                width: double.infinity,
+                height: 56,
+                child: ElevatedButton(
+                  onPressed: () {
+                    Navigator.pushNamed(context, '/home');
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.white,
+                    foregroundColor: Colors.black,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    elevation: 0,
+                  ),
+                  child: Text(
+                    'Get Started',
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+              ),
+              
+              SizedBox(height: 15),
+              
+              //Sign in button
+              SizedBox(
+                width: double.infinity,
+                height: 56,
+                child: OutlinedButton(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => LoginScreen()),
+                    );
+                  },
+                  style: OutlinedButton.styleFrom(
+                    foregroundColor: Colors.white,
+                    side: BorderSide(color: Colors.grey[800]!, width: 2),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                  child: Text(
+                    'Already have an account? Sign In',
+                    style: TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ),
+              ),
+              
+              Spacer(flex: 1),
+            ],
           ),
-          Padding(
-            padding: const EdgeInsets.only(top: 80),
-            child: Text(
-              'Ready to join the loyalty rewards world?',
-              style: TextStyle(
-                fontSize: 25,
-                fontWeight: FontWeight.bold,
-                fontFamily: 'cursive',
-                color: Colors.amberAccent,
-              ),
-              ),
-          ),
-          Padding(
-            padding: const EdgeInsets.only(top: 80),
-            child: Text(
-              'Sign up below, get ready to be Perkii',
-              style: TextStyle(
-                fontSize: 25,
-                fontWeight: FontWeight.bold,
-                fontFamily: 'cursive',
-                color: Colors.amberAccent,
-              ),
-              ),
-          ),
-          GestureDetector(
-            onTap: () {
-              //Goes to login
-            },
-            child: const Text(
-              'Get Started',
-              style: TextStyle(
-                fontSize: 10,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-          ),
-          const SizedBox(height: 20), 
-
-          GestureDetector(
-            onTap: () {
-              //Goes to login
-            },
-            child: const Text(
-              'Already have an account?',
-              style: TextStyle(
-                fontSize: 10,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-          )
-          
-          
-          
-        ] 
+        ),
       ),
     );
   }

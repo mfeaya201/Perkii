@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart'; 
+import 'package:flutter/material.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -8,73 +8,227 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
+  final _formKey = GlobalKey<FormState>();
+  bool _obscurePassword = true;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.black,
       appBar: AppBar(
-        title: Text('Login Screen'),
+        backgroundColor: Colors.black,
+        elevation: 0,
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back, color: Colors.white),
+          onPressed: () => Navigator.pop(context),
+        ),
       ),
-      body: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.center,  
-        children: [
-          Text(
-            'Login',
-            style: TextStyle(
-              fontSize: 35,
-              color: Colors.teal,
-              fontWeight: FontWeight.bold,
-            ),
-          ), 
-
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 35),
-            child: Form(
-              child: Column(
-                children: [
-                  TextFormField(
-                    keyboardType: TextInputType.emailAddress,
-                    decoration: InputDecoration(
-                      labelText: 'Email',
-                      hintText: 'Enter email',
-                      prefixIcon: Icon(Icons.email),
-                      border: OutlineInputBorder(),
-                    ),
-                    onChanged: (String value) {},
-                    validator: (value) {
-                      return value!.isEmpty ? 'Please Enter Your Email' : null;
-                    },
+      body: SafeArea(
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 30),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                SizedBox(height: 40),
+                Text(
+                  'Welcome\nBack',
+                  style: TextStyle(
+                    fontSize: 42,
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                    height: 1.2,
                   ),
-                  SizedBox(height: 30), 
-                  
-                  TextFormField(
-                    obscureText: true,
-                    decoration: InputDecoration(
-                      labelText: 'Password',
-                      hintText: 'Enter Password',
-                      prefixIcon: Icon(Icons.lock),
-                      border: OutlineInputBorder(),
-                    ),
-                    onChanged: (String value) {},
-                    validator: (value) {
-                      return value!.isEmpty ? 'Please Enter Your Password' : null;
-                    },
+                ),
+                SizedBox(height: 10),
+                Text(
+                  'Sign in to continue',
+                  style: TextStyle(
+                    fontSize: 16,
+                    color: Colors.grey[600],
+                    fontWeight: FontWeight.w400,
                   ),
-                  
-                  SizedBox(height: 30), 
-                  
-                  MaterialButton( 
-                    minWidth: 150,
-                    onPressed: () {}, 
-                    child: Text('Login'),
-                    color: Colors.teal,
-                    textColor: Colors.white,
+                ),
+                SizedBox(height: 60),
+                Form(
+                  key: _formKey,
+                  child: Column(
+                    children: [
+                      //Email field
+                      TextFormField(
+                        keyboardType: TextInputType.emailAddress,
+                        style: TextStyle(color: Colors.white),
+                        decoration: InputDecoration(
+                          labelText: 'Email',
+                          labelStyle: TextStyle(color: Colors.grey[600]),
+                          hintText: 'Enter your email',
+                          hintStyle: TextStyle(color: Colors.grey[700]),
+                          prefixIcon: Icon(Icons.email_outlined, color: Colors.grey[600]),
+                          filled: true,
+                          fillColor: Colors.grey[900],
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                            borderSide: BorderSide.none,
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                            borderSide: BorderSide(color: Colors.white, width: 2),
+                          ),
+                          contentPadding: EdgeInsets.symmetric(vertical: 18),
+                        ),
+                        validator: (value) {
+                          return value!.isEmpty ? 'Please enter your email' : null;
+                        },
+                      ),
+                      SizedBox(height: 20),
+                      
+                      //Password field
+                      TextFormField(
+                        obscureText: _obscurePassword,
+                        style: TextStyle(color: Colors.white),
+                        decoration: InputDecoration(
+                          labelText: 'Password',
+                          labelStyle: TextStyle(color: Colors.grey[600]),
+                          hintText: 'Enter your password',
+                          hintStyle: TextStyle(color: Colors.grey[700]),
+                          prefixIcon: Icon(Icons.lock_outline, color: Colors.grey[600]),
+                          suffixIcon: IconButton(
+                            icon: Icon(
+                              _obscurePassword ? Icons.visibility_off_outlined : Icons.visibility_outlined,
+                              color: Colors.grey[600],
+                            ),
+                            onPressed: () {
+                              setState(() {
+                                _obscurePassword = !_obscurePassword;
+                              });
+                            },
+                          ),
+                          filled: true,
+                          fillColor: Colors.grey[900],
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                            borderSide: BorderSide.none,
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                            borderSide: BorderSide(color: Colors.white, width: 2),
+                          ),
+                          contentPadding: EdgeInsets.symmetric(vertical: 18),
+                        ),
+                        validator: (value) {
+                          return value!.isEmpty ? 'Please enter your password' : null;
+                        },
+                      ),
+                      
+                      SizedBox(height: 15),
+                      
+                      //Forgot password
+                      Align(
+                        alignment: Alignment.centerRight,
+                        child: TextButton(
+                          onPressed: () {},
+                          child: Text(
+                            'Forgot Password?',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ),
+                      ),
+                      
+                      SizedBox(height: 30),
+                      
+                      // Login Button
+                      SizedBox(
+                        width: double.infinity,
+                        height: 56,
+                        child: ElevatedButton(
+                          onPressed: () {
+                            if (_formKey.currentState!.validate()) {
+                              Navigator.pushReplacementNamed(context, '/home');
+                            }
+                          },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.white,
+                            foregroundColor: Colors.black,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            elevation: 0,
+                          ),
+                          child: Text(
+                            'Sign In',
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                      ),
+                      
+                      SizedBox(height: 30),
+                      
+                      //Divider
+                      Row(
+                        children: [
+                          Expanded(child: Divider(color: Colors.grey[800])),
+                          Padding(
+                            padding: EdgeInsets.symmetric(horizontal: 15),
+                            child: Text(
+                              'OR',
+                              style: TextStyle(color: Colors.grey[600]),
+                            ),
+                          ),
+                          Expanded(child: Divider(color: Colors.grey[800])),
+                        ],
+                      ),
+                      
+                      SizedBox(height: 30),
+                      
+                      //Social login buttons
+                      SizedBox(
+                        width: double.infinity,
+                        height: 56,
+                        child: OutlinedButton.icon(
+                          onPressed: () {},
+                          icon: Icon(Icons.g_mobiledata, size: 28),
+                          label: Text('Continue with Google'),
+                          style: OutlinedButton.styleFrom(
+                            foregroundColor: Colors.white,
+                            side: BorderSide(color: Colors.grey[800]!),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                          ),
+                        ),
+                      ),
+                      
+                      SizedBox(height: 15),
+                      
+                      SizedBox(
+                        width: double.infinity,
+                        height: 56,
+                        child: OutlinedButton.icon(
+                          onPressed: () {},
+                          icon: Icon(Icons.apple, size: 24),
+                          label: Text('Continue with Apple'),
+                          style: OutlinedButton.styleFrom(
+                            foregroundColor: Colors.white,
+                            side: BorderSide(color: Colors.grey[800]!),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
           ),
-        ],
+        ),
       ),
     );
   }
