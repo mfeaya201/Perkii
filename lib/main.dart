@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:perkii/pages/home_page.dart';
 import 'package:perkii/pages/onboarding_page.dart';
 import 'package:perkii/pages/login_screen.dart';
+import 'package:perkii/pages/user_profile.dart';
 
 void main() {
   runApp(const MyApp());
@@ -46,6 +47,7 @@ class MyApp extends StatelessWidget {
         '/onboarding': (context) => OnBoard(),
         '/login': (context) => LoginScreen(),
         '/home': (context) => HomePage(),
+        '/profile': (context) => UserProfile(),
       },
     );
   }

@@ -21,7 +21,7 @@ class _OnBoardState extends State<OnBoard> {
             children: [
               Spacer(flex: 2),
               
-              //Logo
+              // Logo/Brand
               Center(
                 child: Container(
                   width: 80,
@@ -45,7 +45,7 @@ class _OnBoardState extends State<OnBoard> {
               
               SizedBox(height: 40),
               
-              //App name
+              // App Name
               Center(
                 child: Text(
                   'Perkii',
@@ -60,7 +60,7 @@ class _OnBoardState extends State<OnBoard> {
               
               Spacer(flex: 1),
               
-              //Main heading
+              // Main Heading
               Text(
                 'Rewards Made\nSimple',
                 style: TextStyle(
@@ -86,7 +86,7 @@ class _OnBoardState extends State<OnBoard> {
               
               Spacer(flex: 2),
               
-              //Get started button
+              // Get Started Button
               SizedBox(
                 width: double.infinity,
                 height: 56,
@@ -114,7 +114,7 @@ class _OnBoardState extends State<OnBoard> {
               
               SizedBox(height: 15),
               
-              //Sign in button
+              // Sign In Button
               SizedBox(
                 width: double.infinity,
                 height: 56,

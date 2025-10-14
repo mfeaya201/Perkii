@@ -33,7 +33,9 @@ class _HomePageState extends State<HomePage> {
           ),
           IconButton(
             icon: Icon(Icons.person_outline, color: Colors.white),
-            onPressed: () {},
+            onPressed: () {
+              Navigator.pushNamed(context, '/profile');
+            },
           ),
         ],
       ),
@@ -41,7 +43,7 @@ class _HomePageState extends State<HomePage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            //Featured card
+            // Featured Card
             Container(
               margin: EdgeInsets.all(20),
               height: 200,
@@ -67,7 +69,7 @@ class _HomePageState extends State<HomePage> {
                         ),
                         SizedBox(height: 10),
                         Text(
-                          'xxx Points',
+                          '2,450 Points',
                           style: TextStyle(
                             color: Colors.grey[700],
                             fontSize: 20,
@@ -100,7 +102,7 @@ class _HomePageState extends State<HomePage> {
               ),
             ),
 
-            //Section title
+            // Section Title
             Padding(
               padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
               child: Text(
@@ -113,7 +115,7 @@ class _HomePageState extends State<HomePage> {
               ),
             ),
 
-            //Perk cards
+            // Perk Cards
             ListView.builder(
               shrinkWrap: true,
               physics: NeverScrollableScrollPhysics(),

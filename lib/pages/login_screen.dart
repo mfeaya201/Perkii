@@ -54,7 +54,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   key: _formKey,
                   child: Column(
                     children: [
-                      //Email field
+                      // Email Field
                       TextFormField(
                         keyboardType: TextInputType.emailAddress,
                         style: TextStyle(color: Colors.white),
@@ -82,7 +82,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                       SizedBox(height: 20),
                       
-                      //Password field
+                      // Password Field
                       TextFormField(
                         obscureText: _obscurePassword,
                         style: TextStyle(color: Colors.white),
@@ -122,7 +122,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       
                       SizedBox(height: 15),
                       
-                      //Forgot password
+                      // Forgot Password
                       Align(
                         alignment: Alignment.centerRight,
                         child: TextButton(
@@ -169,7 +169,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       
                       SizedBox(height: 30),
                       
-                      //Divider
+                      // Divider
                       Row(
                         children: [
                           Expanded(child: Divider(color: Colors.grey[800])),
@@ -186,7 +186,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       
                       SizedBox(height: 30),
                       
-                      //Social login buttons
+                      // Social Login Buttons
                       SizedBox(
                         width: double.infinity,
                         height: 56,
