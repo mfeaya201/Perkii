@@ -22,7 +22,7 @@ class NotificationPage extends StatelessWidget {
     },
   ];
 
-  Widget buildNotificationTile(Map<String, String> notification){
+  Widget buildNotificationTile(Map<String, String> notification) {
     return Padding(
       padding: const EdgeInsets.only(top: 10),
       child: Column(
@@ -33,31 +33,31 @@ class NotificationPage extends StatelessWidget {
             ),
             title: Text(notification['title']!),
             subtitle: Text(notification['time']!),
-            trailing: const Icon(Icons.arrow_forward_ios),
+            trailing: const Icon(Icons.arrow_forward_ios, size: 18),
           ),
           const Divider(
             thickness: 1,
             color: Colors.grey,
-          )
+          ),
         ],
       ),
     );
   }
 
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      // ✅ BODY CONTENT
       body: Padding(
         padding: const EdgeInsets.all(20),
         child: Column(
           children: [
-            const SizedBox(height: 15), // top spacing
-            Center(
+            const SizedBox(height: 15),
+            const Center(
               child: Text(
                 "Notifications",
-                style: const TextStyle(
-                  fontSize: 20, // slightly bigger
+                style: TextStyle(
+                  fontSize: 22,
                   fontWeight: FontWeight.bold,
                   color: Colors.black,
                 ),
@@ -73,11 +73,43 @@ class NotificationPage extends StatelessWidget {
                 itemCount: notifications.length,
                 itemBuilder: (context, index) {
                   return buildNotificationTile(notifications[index]);
-                }
+                },
               ),
-            )
+            ),
           ],
         ),
+      ),
+
+     
+      bottomNavigationBar: BottomNavigationBar(
+        backgroundColor: Colors.white,
+        selectedItemColor: Colors.blue, 
+        unselectedItemColor: Colors.grey,
+        currentIndex: 2, // 0 = home, 1 = favorites, 2 = notifications
+        onTap: (index) {
+          // Example navigation logic:
+          if (index == 0) {
+            // Navigator.pushReplacementNamed(context, '/home');
+          } else if (index == 1) {
+            // Navigator.pushReplacementNamed(context, '/favorites');
+          } else if (index == 2) {
+            // We’re already on notifications
+          }
+        },
+        items: const [
+          BottomNavigationBarItem(
+            icon: Icon(Icons.home),
+            label: '',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.favorite),
+            label: '',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.notifications_active), // Highlighted icon
+            label: '',
+          ),
+        ],
       ),
     );
   }
