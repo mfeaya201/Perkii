@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:perkii/pages/home_page.dart';
+import 'package:perkii/pages/notification_page.dart';
 import 'package:perkii/pages/onboarding_page.dart';
 import 'package:perkii/pages/login_screen.dart';
 import 'package:perkii/pages/user_profile.dart';
@@ -17,7 +18,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp( 
       debugShowCheckedModeBanner: false,
-      home: UserProfile(),
+      home: NotificationPage(),
     
     );
   }
