@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "202940636413",
+    "project_id": "perkii",
+    "storage_bucket": "perkii.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:202940636413:android:09bd6086409f5d88be3294",
+        "android_client_info": {
+          "package_name": "com.example.perkii"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBRCcJHKk2zjntLjsyzX8AvtG9YZT75Uu4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
