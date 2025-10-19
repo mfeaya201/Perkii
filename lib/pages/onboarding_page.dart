@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:perkii/pages/login_screen.dart';
 
 class OnBoard extends StatefulWidget {
   const OnBoard({super.key});
@@ -92,7 +91,7 @@ class _OnBoardState extends State<OnBoard> {
                 height: 56,
                 child: ElevatedButton(
                   onPressed: () {
-                    Navigator.pushNamed(context, '/home');
+                    Navigator.pushNamed(context, '/register');
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.white,
@@ -120,10 +119,7 @@ class _OnBoardState extends State<OnBoard> {
                 height: 56,
                 child: OutlinedButton(
                   onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => LoginScreen()),
-                    );
+                    Navigator.pushNamed(context, '/login');
                   },
                   style: OutlinedButton.styleFrom(
                     foregroundColor: Colors.white,

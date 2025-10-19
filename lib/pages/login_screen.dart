@@ -167,60 +167,29 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                       ),
                       
-                      SizedBox(height: 30),
+                      SizedBox(height: 20),
                       
-                      // Divider
+                      // Register Link
                       Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Expanded(child: Divider(color: Colors.grey[800])),
-                          Padding(
-                            padding: EdgeInsets.symmetric(horizontal: 15),
+                          Text(
+                            'Don\'t have an account? ',
+                            style: TextStyle(color: Colors.grey[600]),
+                          ),
+                          TextButton(
+                            onPressed: () {
+                              Navigator.pushNamed(context, '/register');
+                            },
                             child: Text(
-                              'OR',
-                              style: TextStyle(color: Colors.grey[600]),
+                              'Sign Up',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.w600,
+                              ),
                             ),
                           ),
-                          Expanded(child: Divider(color: Colors.grey[800])),
                         ],
-                      ),
-                      
-                      SizedBox(height: 30),
-                      
-                      // Social Login Buttons
-                      SizedBox(
-                        width: double.infinity,
-                        height: 56,
-                        child: OutlinedButton.icon(
-                          onPressed: () {},
-                          icon: Icon(Icons.g_mobiledata, size: 28),
-                          label: Text('Continue with Google'),
-                          style: OutlinedButton.styleFrom(
-                            foregroundColor: Colors.white,
-                            side: BorderSide(color: Colors.grey[800]!),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                          ),
-                        ),
-                      ),
-                      
-                      SizedBox(height: 15),
-                      
-                      SizedBox(
-                        width: double.infinity,
-                        height: 56,
-                        child: OutlinedButton.icon(
-                          onPressed: () {},
-                          icon: Icon(Icons.apple, size: 24),
-                          label: Text('Continue with Apple'),
-                          style: OutlinedButton.styleFrom(
-                            foregroundColor: Colors.white,
-                            side: BorderSide(color: Colors.grey[800]!),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                          ),
-                        ),
                       ),
                     ],
                   ),

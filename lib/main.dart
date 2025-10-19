@@ -2,7 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:perkii/pages/home_page.dart';
 import 'package:perkii/pages/onboarding_page.dart';
 import 'package:perkii/pages/login_screen.dart';
+import 'package:perkii/pages/register_page.dart';
 import 'package:perkii/pages/user_profile.dart';
+import 'package:perkii/pages/favorites_page.dart';
+import 'package:perkii/pages/notification_page.dart';
+import 'package:perkii/pages/business_details_page.dart';
 
 void main() {
   runApp(const MyApp());
@@ -46,8 +50,23 @@ class MyApp extends StatelessWidget {
       routes: {
         '/onboarding': (context) => OnBoard(),
         '/login': (context) => LoginScreen(),
+        '/register': (context) => RegisterPage(),
         '/home': (context) => HomePage(),
         '/profile': (context) => UserProfile(),
+        '/favorites': (context) => FavoritesPage(),
+        '/notifications': (context) => NotificationPage(),
+      },
+      onGenerateRoute: (settings) {
+        if (settings.name == '/business-details') {
+          final args = settings.arguments as Map<String, dynamic>;
+          return MaterialPageRoute(
+            builder: (context) => BusinessDetailsPage(
+              businessName: args['businessName'],
+              businessIndex: args['businessIndex'],
+            ),
+          );
+        }
+        return null;
       },
     );
   }

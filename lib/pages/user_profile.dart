@@ -1,4 +1,4 @@
-import "package:flutter/material.dart";
+import 'package:flutter/material.dart';
 
 class UserProfile extends StatelessWidget {
   const UserProfile({super.key});
@@ -42,7 +42,6 @@ class UserProfile extends StatelessWidget {
                   CircleAvatar(
                     radius: 70,
                     backgroundColor: Colors.grey[900],
-                    backgroundImage: AssetImage('assets/images/profile.png'),
                     child: Icon(
                       Icons.person,
                       size: 70,
@@ -168,10 +167,56 @@ class UserProfile extends StatelessWidget {
                 height: 56,
                 child: OutlinedButton(
                   onPressed: () {
-                    Navigator.pushNamedAndRemoveUntil(
-                      context,
-                      '/onboarding',
-                      (route) => false,
+                    // Show confirmation dialog
+                    showDialog(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return AlertDialog(
+                          backgroundColor: Colors.grey[900],
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(15),
+                          ),
+                          title: Text(
+                            'Log Out',
+                            style: TextStyle(color: Colors.white),
+                          ),
+                          content: Text(
+                            'Are you sure you want to log out?',
+                            style: TextStyle(color: Colors.grey[400]),
+                          ),
+                          actions: [
+                            TextButton(
+                              onPressed: () {
+                                Navigator.of(context).pop();
+                              },
+                              child: Text(
+                                'Cancel',
+                                style: TextStyle(color: Colors.grey[500]),
+                              ),
+                            ),
+                            ElevatedButton(
+                              onPressed: () {
+                                Navigator.of(context).pop();
+                                Navigator.pushNamedAndRemoveUntil(
+                                  context,
+                                  '/onboarding',
+                                  (route) => false,
+                                );
+                              },
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.red[400],
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                              ),
+                              child: Text(
+                                'Log Out',
+                                style: TextStyle(color: Colors.white),
+                              ),
+                            ),
+                          ],
+                        );
+                      },
                     );
                   },
                   style: OutlinedButton.styleFrom(
