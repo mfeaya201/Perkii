@@ -13,7 +13,7 @@ class _BusinessHomeDashboardState extends State<BusinessHomeDashboard> {
   // Placeholder stats
   final int totalDeals = 5;
   final int activeDeals = 3;
-  final int totalViews = 127;
+  final int totalViews = 0;
 
   void _onNavTap(int index) {
     setState(() {

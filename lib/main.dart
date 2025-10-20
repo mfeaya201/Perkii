@@ -50,7 +50,8 @@ class MyApp extends StatelessWidget {
           bodyMedium: TextStyle(color: Colors.white),
         ),
       ),
-      home: BusinessHomeDashboard(),
+      home: OnBoard(), //home: BusinessHomeDashboard(), to test
+
       routes: {
         '/onboarding': (context) => OnBoard(),
         '/login': (context) => LoginScreen(),
