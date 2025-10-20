@@ -7,6 +7,10 @@ import 'package:perkii/pages/user_profile.dart';
 import 'package:perkii/pages/favorites_page.dart';
 import 'package:perkii/pages/notification_page.dart';
 import 'package:perkii/pages/business_details_page.dart';
+import 'package:perkii/pages/business_home_dashboard.dart';
+import 'package:perkii/pages/manage_deals_page.dart';
+import 'package:perkii/pages/create_deal_page.dart';
+import 'package:perkii/pages/edit_deal_page.dart';
 
 void main() {
   runApp(const MyApp());
@@ -46,7 +50,7 @@ class MyApp extends StatelessWidget {
           bodyMedium: TextStyle(color: Colors.white),
         ),
       ),
-      home: OnBoard(),
+      home: BusinessHomeDashboard(),
       routes: {
         '/onboarding': (context) => OnBoard(),
         '/login': (context) => LoginScreen(),
@@ -55,6 +59,10 @@ class MyApp extends StatelessWidget {
         '/profile': (context) => UserProfile(),
         '/favorites': (context) => FavoritesPage(),
         '/notifications': (context) => NotificationPage(),
+        '/business/home': (context) => BusinessHomeDashboard(),
+        '/business/deals': (context) => ManageDealsPage(),
+        '/business/create-deal': (context) => CreateDealPage(),
+        '/business/edit-deal': (context) => EditDealPage(),
       },
       onGenerateRoute: (settings) {
         if (settings.name == '/business-details') {
