@@ -249,7 +249,7 @@ class _EditDealPageState extends State<EditDealPage> {
                             _isActive = value;
                           });
                         },
-                        activeColor: Colors.white,
+                        activeThumbColor: Colors.white,
                         activeTrackColor: Colors.green[700],
                       ),
                     ],

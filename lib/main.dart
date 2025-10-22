@@ -1,9 +1,12 @@
+// lib/main.dart
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+
 import 'firebase_options.dart';
 
+// Pages
 import 'package:perkii/pages/home_page.dart';
 import 'package:perkii/pages/onboarding_page.dart';
 import 'package:perkii/pages/login_screen.dart';
@@ -29,10 +32,10 @@ Future<void> main() async {
       debugPrint('[main] Firebase initialized');
     }
   } catch (e) {
-    // Ignore duplicate-app errors (hot reload), rethrow others
+    // Ignore duplicate-app errors on hot reload, rethrow others
     final msg = e.toString().toLowerCase();
     if (!msg.contains('duplicate-app') &&
-        !msg.contains('app named [default] already exists')) {
+        !msg.contains('already exists')) {
       rethrow;
     } else {
       debugPrint('[main] Firebase duplicate app (safe to ignore)');
@@ -49,6 +52,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
+
       theme: ThemeData(
         brightness: Brightness.dark,
         scaffoldBackgroundColor: Colors.black,
@@ -80,11 +84,12 @@ class MyApp extends StatelessWidget {
       // Landing is decided by auth + Firestore role
       home: const RoleGate(),
 
+      // Static routes that don't need dynamic arguments
       routes: {
-        '/onboarding': (context) => const OnBoard(),           // landing for non-business
+        '/onboarding': (context) => const OnBoard(),
         '/login': (context) => const LoginScreen(),
         '/register': (context) => const RegisterPage(),
-        '/home': (context) => const HomePage(),                // customer dashboard (if you navigate to it)
+        '/home': (context) => const HomePage(),
         '/profile': (context) => const UserProfile(),
         '/favorites': (context) => const FavoritesPage(),
         '/notifications': (context) => const NotificationPage(),
@@ -94,16 +99,37 @@ class MyApp extends StatelessWidget {
         '/business/edit-deal': (context) => const EditDealPage(),
       },
 
+      // Dynamic routes that require arguments
       onGenerateRoute: (settings) {
         if (settings.name == '/business-details') {
           final args = (settings.arguments is Map)
               ? settings.arguments as Map<String, dynamic>
-              : <String, dynamic>{};
+              : const <String, dynamic>{};
+
+          final String? businessId = args['businessId'] as String?;
+          final String businessName =
+              (args['businessName'] as String?) ?? 'Business';
+          final int businessIndex =
+              (args['businessIndex'] is int) ? args['businessIndex'] as int : 0;
+
+          if (businessId == null || businessId.isEmpty) {
+            // Guard page if required arg missing
+            return MaterialPageRoute(
+              builder: (_) => const Scaffold(
+                backgroundColor: Colors.black,
+                body: Center(
+                  child: Text('Missing businessId',
+                      style: TextStyle(color: Colors.white)),
+                ),
+              ),
+            );
+          }
 
           return MaterialPageRoute(
-            builder: (context) => BusinessDetailsPage(
-              businessName: args['businessName'] ?? 'Business',
-              businessIndex: args['businessIndex'] ?? 0,
+            builder: (_) => BusinessDetailsPage(
+              businessId: businessId,
+              businessName: businessName,
+              businessIndex: businessIndex,
             ),
           );
         }
@@ -116,7 +142,7 @@ class MyApp extends StatelessWidget {
 /// Decides which screen to show on app start:
 /// - Not logged in → OnBoard (landing)
 /// - Logged in + accountType == 'business' → BusinessHomeDashboard
-/// - Otherwise (users/unknown) → OnBoard (landing)
+/// - Otherwise (users/unknown) → OnBoard (or change to HomePage if you prefer)
 class RoleGate extends StatelessWidget {
   const RoleGate({super.key});
 
@@ -128,21 +154,21 @@ class RoleGate extends StatelessWidget {
     }
 
     try {
-      final snap = await FirebaseFirestore.instance
-          .collection('users')
-          .doc(user.uid)
-          .get();
+      final snap =
+          await FirebaseFirestore.instance.collection('users').doc(user.uid).get();
 
       final data = snap.data() ?? {};
       final rawType = data['accountType'];
       final accountType = (rawType is String) ? rawType.trim().toLowerCase() : null;
 
-      debugPrint('[RoleGate] uid=${user.uid} email=${user.email} accountType=$accountType');
+      debugPrint(
+          '[RoleGate] uid=${user.uid} email=${user.email} accountType=$accountType');
 
       if (accountType == 'business') {
         return const BusinessHomeDashboard();
       }
       // Landing for all non-business accounts
+      // If you want regular users to see HomePage instead, return const HomePage();
       return const OnBoard();
     } catch (e) {
       debugPrint('[RoleGate] Error reading role: $e → OnBoard (fallback)');

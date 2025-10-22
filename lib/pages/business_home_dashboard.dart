@@ -19,15 +19,25 @@ class _BusinessHomeDashboardState extends State<BusinessHomeDashboard> {
     }
   }
 
+  /// Stream for ALL deals of the signed-in business (used for stats)
   Stream<QuerySnapshot<Map<String, dynamic>>> _dealsStreamForCurrentBusiness() {
-    final user = FirebaseAuth.instance.currentUser;
-    if (user == null) {
-      // If somehow no user (shouldn’t happen here), return an empty stream
-      return const Stream<QuerySnapshot<Map<String, dynamic>>>.empty();
-    }
+    final uid = FirebaseAuth.instance.currentUser?.uid;
+    if (uid == null) return Stream<QuerySnapshot<Map<String, dynamic>>>.empty();
     return FirebaseFirestore.instance
         .collection('deals')
-        .where('businessId', isEqualTo: user.uid)
+        .where('businessId', isEqualTo: uid)
+        .snapshots();
+  }
+
+  /// Stream for the 3 most recent deals (server-side ordered by createdAt)
+  Stream<QuerySnapshot<Map<String, dynamic>>> _recentDealsStream() {
+    final uid = FirebaseAuth.instance.currentUser?.uid;
+    if (uid == null) return Stream<QuerySnapshot<Map<String, dynamic>>>.empty();
+    return FirebaseFirestore.instance
+        .collection('deals')
+        .where('businessId', isEqualTo: uid)
+        .orderBy('createdAt', descending: true)
+        .limit(3)
         .snapshots();
   }
 
@@ -57,11 +67,11 @@ class _BusinessHomeDashboardState extends State<BusinessHomeDashboard> {
       body: StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
         stream: _dealsStreamForCurrentBusiness(),
         builder: (context, snapshot) {
-          // Loading state
+          // Loading
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
           }
-          // Error state
+          // Error
           if (snapshot.hasError) {
             return Center(
               child: Text(
@@ -74,21 +84,21 @@ class _BusinessHomeDashboardState extends State<BusinessHomeDashboard> {
 
           final docs = snapshot.data?.docs ?? [];
 
-          // ---- Compute stats (defensive against missing fields) ----
+          // ---- Compute stats (defensive) ----
           final int totalDeals = docs.length;
 
           final int activeDeals = docs.where((d) {
             final data = d.data();
-            final isActive = (data['isActive'] == true); // <-- tweak here if needed
+            final isActive = (data['isActive'] == true);
             final status = (data['status'] as String?)?.toLowerCase();
-            return isActive || status == 'active'; // support both schemas
+            return isActive || status == 'active';
           }).length;
 
           final int totalViews = docs.fold<int>(0, (sum, d) {
             final v = d.data()['views'];
             if (v is int) return sum + v;
             if (v is num) return sum + v.toInt();
-            return sum; // default to 0 if missing/wrong type
+            return sum;
           });
 
           return SingleChildScrollView(
@@ -97,7 +107,7 @@ class _BusinessHomeDashboardState extends State<BusinessHomeDashboard> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Welcome Section
+                  // Welcome
                   const Text(
                     'Welcome Back',
                     style: TextStyle(
@@ -117,7 +127,7 @@ class _BusinessHomeDashboardState extends State<BusinessHomeDashboard> {
 
                   const SizedBox(height: 30),
 
-                  // Stats Cards
+                  // Stats
                   Row(
                     children: [
                       Expanded(
@@ -137,9 +147,7 @@ class _BusinessHomeDashboardState extends State<BusinessHomeDashboard> {
                       ),
                     ],
                   ),
-
                   const SizedBox(height: 15),
-
                   _buildStatCard(
                     'Total Views',
                     totalViews.toString(),
@@ -167,7 +175,6 @@ class _BusinessHomeDashboardState extends State<BusinessHomeDashboard> {
                     () => Navigator.pushNamed(context, '/business/create-deal'),
                   ),
                   const SizedBox(height: 15),
-
                   _buildActionButton(
                     'Manage Deals',
                     'View and edit your existing deals',
@@ -175,7 +182,6 @@ class _BusinessHomeDashboardState extends State<BusinessHomeDashboard> {
                     () => Navigator.pushNamed(context, '/business/deals'),
                   ),
                   const SizedBox(height: 15),
-
                   _buildActionButton(
                     'Business Profile',
                     'Update your business information',
@@ -185,7 +191,7 @@ class _BusinessHomeDashboardState extends State<BusinessHomeDashboard> {
 
                   const SizedBox(height: 30),
 
-                  // Recent Deals Section
+                  // Recent Deals
                   const Text(
                     'Recent Deals',
                     style: TextStyle(
@@ -196,8 +202,52 @@ class _BusinessHomeDashboardState extends State<BusinessHomeDashboard> {
                   ),
                   const SizedBox(height: 15),
 
-                  // Show last 3 deals (by createdAt desc if present, else as-is)
-                  ..._buildRecentDeals(docs),
+                  StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
+                    stream: _recentDealsStream(),
+                    builder: (context, recentSnap) {
+                      if (recentSnap.connectionState == ConnectionState.waiting) {
+                        return const Center(child: CircularProgressIndicator());
+                      }
+                      if (recentSnap.hasError) {
+                        return Text(
+                          'Error loading recent deals',
+                          style: TextStyle(color: Colors.red[300]),
+                        );
+                      }
+                      final recentDocs = recentSnap.data?.docs ?? [];
+                      if (recentDocs.isEmpty) {
+                        return Container(
+                          padding: const EdgeInsets.all(16),
+                          decoration: BoxDecoration(
+                            color: Colors.grey[900],
+                            borderRadius: BorderRadius.circular(12),
+                            border: Border.all(color: Colors.grey[800]!, width: 1),
+                          ),
+                          child: Text(
+                            'No deals yet. Create your first one!',
+                            style: TextStyle(color: Colors.grey[500]),
+                          ),
+                        );
+                      }
+                      return Column(
+                        children: recentDocs.map((d) {
+                          final data = d.data();
+                          final title = (data['title'] as String?) ?? 'Untitled Deal';
+                          final points = (data['points'] is int)
+                              ? '${data['points']} points'
+                              : '${data['points']?.toString() ?? '—'} points';
+                          final isActive = (data['isActive'] == true) ||
+                              ((data['status'] as String?)?.toLowerCase() == 'active');
+
+                          return Padding(
+                            padding: const EdgeInsets.only(bottom: 10),
+                            child: _buildRecentDealCard(title, points, isActive),
+                          );
+                        }).toList(),
+                      );
+                    },
+                  ),
+
                   const SizedBox(height: 20),
                 ],
               ),
@@ -237,49 +287,7 @@ class _BusinessHomeDashboardState extends State<BusinessHomeDashboard> {
     );
   }
 
-  List<Widget> _buildRecentDeals(List<QueryDocumentSnapshot<Map<String, dynamic>>> docs) {
-    // Sort by createdAt (desc) if provided
-    docs.sort((a, b) {
-      final aTs = a.data()['createdAt'];
-      final bTs = b.data()['createdAt'];
-      final aMicros = (aTs is Timestamp) ? aTs.microsecondsSinceEpoch : -1;
-      final bMicros = (bTs is Timestamp) ? bTs.microsecondsSinceEpoch : -1;
-      return bMicros.compareTo(aMicros);
-    });
-
-    final recent = docs.take(3).toList();
-
-    if (recent.isEmpty) {
-      return [
-        Container(
-          padding: const EdgeInsets.all(16),
-          decoration: BoxDecoration(
-            color: Colors.grey[900],
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: Colors.grey[800]!, width: 1),
-          ),
-          child: Text(
-            'No deals yet. Create your first one!',
-            style: TextStyle(color: Colors.grey[500]),
-          ),
-        ),
-      ];
-    }
-
-    return recent.map((d) {
-      final data = d.data();
-      final title = (data['title'] as String?) ?? 'Untitled Deal';
-      final points = (data['points'] as int?)?.toString() ??
-          (data['points']?.toString() ?? '—');
-      final isActive = (data['isActive'] == true) ||
-          ((data['status'] as String?)?.toLowerCase() == 'active');
-
-      return Padding(
-        padding: const EdgeInsets.only(bottom: 10),
-        child: _buildRecentDealCard(title, '$points points', isActive),
-      );
-    }).toList();
-  }
+  // ---------- UI helpers ----------
 
   Widget _buildStatCard(String label, String value, IconData icon, {bool fullWidth = false}) {
     return Container(
@@ -360,7 +368,8 @@ class _BusinessHomeDashboardState extends State<BusinessHomeDashboard> {
                 ],
               ),
             ),
-            const Icon(Icons.arrow_forward_ios, color: Color.fromARGB(255, 126, 125, 125), size: 16),
+            const Icon(Icons.arrow_forward_ios,
+                color: Color.fromARGB(255, 126, 125, 125), size: 16),
           ],
         ),
       ),

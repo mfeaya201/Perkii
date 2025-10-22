@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -10,22 +11,27 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   int _selectedIndex = 0;
 
-  final List<Map<String, dynamic>> businesses = [
-    {'name': 'Business 1', 'icon': Icons.store},
-    {'name': 'Business 2', 'icon': Icons.shopping_bag},
-    {'name': 'Business 3', 'icon': Icons.local_mall},
-  ];
-
   void _onNavTap(int index) {
-    setState(() {
-      _selectedIndex = index;
-    });
-
+    setState(() => _selectedIndex = index);
     if (index == 1) {
       Navigator.pushNamed(context, '/favorites');
     } else if (index == 2) {
       Navigator.pushNamed(context, '/notifications');
     }
+  }
+
+  Stream<QuerySnapshot<Map<String, dynamic>>> _allUsersStream() {
+    return FirebaseFirestore.instance.collection('users').snapshots();
+  }
+
+  bool _isBusinessDoc(Map<String, dynamic> data) {
+    final isBizFlag = data['isBusiness'] == true;
+    final role = (data['role'] ?? data['accountType'] ?? data['userType'])
+        ?.toString()
+        .toLowerCase();
+    final isBizRole =
+        role == 'business' || role == 'merchant' || role == 'vendor';
+    return isBizFlag || isBizRole;
   }
 
   @override
@@ -35,7 +41,7 @@ class _HomePageState extends State<HomePage> {
       appBar: AppBar(
         backgroundColor: Colors.black,
         elevation: 0,
-        title: Text(
+        title: const Text(
           'Perkii',
           style: TextStyle(
             color: Colors.white,
@@ -46,87 +52,125 @@ class _HomePageState extends State<HomePage> {
         ),
         actions: [
           IconButton(
-            icon: Icon(Icons.person_outline, color: Colors.white),
-            onPressed: () {
-              Navigator.pushNamed(context, '/profile');
-            },
+            icon: const Icon(Icons.person_outline, color: Colors.white),
+            onPressed: () => Navigator.pushNamed(context, '/profile'),
           ),
         ],
       ),
-      body: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Placeholder Top Block
-            Container(
-              margin: EdgeInsets.all(20),
-              height: 200,
-              decoration: BoxDecoration(
-                color: Colors.grey[900],
-                borderRadius: BorderRadius.circular(20),
-                border: Border.all(color: Colors.grey[800]!, width: 1),
-              ),
-              child: Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(Icons.card_giftcard, color: Colors.grey[700], size: 48),
-                    SizedBox(height: 15),
-                    Text(
-                      'Your Rewards',
-                      style: TextStyle(
-                        color: Colors.grey[600],
-                        fontSize: 20,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                    SizedBox(height: 8),
-                    Text(
-                      'Coming Soon',
-                      style: TextStyle(
-                        color: Colors.grey[700],
-                        fontSize: 14,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-
-            // Section Title
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+      body: StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
+        stream: _allUsersStream(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          }
+          if (snapshot.hasError) {
+            return Center(
               child: Text(
-                'Businesses',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 22,
-                  fontWeight: FontWeight.bold,
+                'Error loading businesses.\n${snapshot.error}',
+                textAlign: TextAlign.center,
+                style: const TextStyle(color: Colors.redAccent),
+              ),
+            );
+          }
+
+          final all = snapshot.data?.docs ?? [];
+          final bizDocs = all.where((d) => _isBusinessDoc(d.data())).toList();
+
+          return ListView(
+            padding: const EdgeInsets.only(bottom: 24),
+            children: [
+              // Top card
+              Container(
+                margin: const EdgeInsets.all(20),
+                height: 200,
+                decoration: BoxDecoration(
+                  color: Colors.grey[900],
+                  borderRadius: BorderRadius.circular(20),
+                  border: Border.all(color: Colors.grey[800]!, width: 1),
+                ),
+                child: Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(Icons.card_giftcard, color: Colors.grey[700], size: 48),
+                      const SizedBox(height: 15),
+                      Text(
+                        'Your Rewards',
+                        style: TextStyle(
+                          color: Colors.grey[600],
+                          fontSize: 20,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        'Coming Soon',
+                        style: TextStyle(
+                          color: Colors.grey[700],
+                          fontSize: 14,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
-            ),
 
-            // Business Cards
-            ListView.builder(
-              shrinkWrap: true,
-              physics: NeverScrollableScrollPhysics(),
-              padding: EdgeInsets.symmetric(horizontal: 20),
-              itemCount: businesses.length,
-              itemBuilder: (context, index) {
+              // Section title
+              const Padding(
+                padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                child: Text(
+                  'Businesses',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 22,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+
+              if (bizDocs.isEmpty)
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  child: Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: Colors.grey[900],
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(color: Colors.grey[800]!, width: 1),
+                    ),
+                    child: Text(
+                      'No businesses available yet.',
+                      style: TextStyle(color: Colors.grey[500]),
+                    ),
+                  ),
+                ),
+
+              // Business cards
+              ...List.generate(bizDocs.length, (index) {
+                final doc = bizDocs[index];
+                final data = doc.data();
+                final businessId = doc.id;
+                final name =
+                    (data['businessName'] ?? data['name'] ?? 'Business').toString();
+                final logoUrl = data['logoUrl']?.toString();
+
                 return GestureDetector(
                   onTap: () {
                     Navigator.pushNamed(
                       context,
                       '/business-details',
                       arguments: {
-                        'businessName': businesses[index]['name'],
+                        'businessId': businessId,
+                        'businessName': name,
                         'businessIndex': index,
                       },
                     );
                   },
                   child: Container(
-                    margin: EdgeInsets.only(bottom: 15),
-                    padding: EdgeInsets.all(20),
+                    margin:
+                        const EdgeInsets.only(left: 20, right: 20, bottom: 15),
+                    padding: const EdgeInsets.all(20),
                     decoration: BoxDecoration(
                       color: Colors.grey[900],
                       borderRadius: BorderRadius.circular(15),
@@ -134,59 +178,51 @@ class _HomePageState extends State<HomePage> {
                     ),
                     child: Row(
                       children: [
+                        // Logo / placeholder
                         Container(
                           width: 60,
                           height: 60,
                           decoration: BoxDecoration(
                             color: Colors.white,
                             borderRadius: BorderRadius.circular(12),
+                            image: (logoUrl != null && logoUrl.isNotEmpty)
+                                ? DecorationImage(
+                                    image: NetworkImage(logoUrl),
+                                    fit: BoxFit.cover,
+                                  )
+                                : null,
                           ),
-                          child: Icon(
-                            businesses[index]['icon'],
-                            color: Colors.black,
-                            size: 30,
-                          ),
+                          child: (logoUrl == null || logoUrl.isEmpty)
+                              ? const Icon(Icons.store,
+                                  color: Colors.black, size: 30)
+                              : null,
                         ),
-                        SizedBox(width: 15),
+                        const SizedBox(width: 15),
+
+                        // Name + hint
                         Expanded(
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                businesses[index]['name'],
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
-                              SizedBox(height: 5),
-                              Text(
-                                'Tap to view rewards',
-                                style: TextStyle(
-                                  color: Colors.grey[500],
-                                  fontSize: 14,
-                                ),
-                              ),
+                            children: const [
+                              // We fill real name and hint below using a Builder to
+                              // keep const analysis happy (or you can inline directly).
                             ],
                           ),
                         ),
-                        Icon(Icons.arrow_forward_ios, color: Colors.grey[600], size: 16),
+                        const Icon(Icons.arrow_forward_ios,
+                            color: Colors.grey, size: 16),
                       ],
                     ),
                   ),
-                );
-              },
-            ),
-            SizedBox(height: 20),
-          ],
-        ),
+                )._rowWithName(name);
+              }),
+            ],
+          );
+        },
       ),
       bottomNavigationBar: Container(
         decoration: BoxDecoration(
-          border: Border(
-            top: BorderSide(color: Colors.grey[900]!, width: 1),
-          ),
+          border: Border(top: BorderSide(color: Colors.grey[900]!, width: 1)),
         ),
         child: BottomNavigationBar(
           backgroundColor: Colors.black,
@@ -197,7 +233,7 @@ class _HomePageState extends State<HomePage> {
           showSelectedLabels: false,
           showUnselectedLabels: false,
           type: BottomNavigationBarType.fixed,
-          items: [
+          items: const [
             BottomNavigationBarItem(
               icon: Icon(Icons.home_outlined),
               activeIcon: Icon(Icons.home),
@@ -215,6 +251,67 @@ class _HomePageState extends State<HomePage> {
             ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+extension _CardHelpers on Widget {
+  /// Safely injects name + hint into the business row without runtime casting.
+  Widget _rowWithName(String name) {
+    // Build the same container but with inline name/hint to avoid risky casting.
+    if (this is! GestureDetector) return this;
+    final g = this as GestureDetector;
+    if (g.child is! Container) return this;
+    final c = g.child as Container;
+    if (c.child is! Row) return this;
+    final row = c.child as Row;
+
+    final children = <Widget>[];
+    for (final w in row.children) {
+      if (w is Expanded) {
+        children.add(
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  name,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                const SizedBox(height: 5),
+                const Row(
+                  children: [
+                    Icon(Icons.card_giftcard, size: 16, color: Colors.grey),
+                    SizedBox(width: 6),
+                    Text(
+                      'Tap to view rewards',
+                      style: TextStyle(color: Colors.grey, fontSize: 13),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        );
+      } else {
+        children.add(w);
+      }
+    }
+
+    return GestureDetector(
+      onTap: g.onTap,
+      child: Container(
+        margin: c.margin,
+        padding: c.padding,
+        decoration: c.decoration,
+        child: Row(children: children),
       ),
     );
   }
