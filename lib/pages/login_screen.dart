@@ -14,6 +14,10 @@ class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
+  // Forgot-password dialog controller/state
+  final TextEditingController _resetEmailController = TextEditingController();
+  bool _isSendingReset = false;
+
   bool _obscurePassword = true;
   bool _isLoading = false;
 
@@ -21,6 +25,7 @@ class _LoginScreenState extends State<LoginScreen> {
   void dispose() {
     _emailController.dispose();
     _passwordController.dispose();
+    _resetEmailController.dispose();
     super.dispose();
   }
 
@@ -36,26 +41,95 @@ class _LoginScreenState extends State<LoginScreen> {
     return null;
   }
 
-  Future<void> _sendPasswordReset() async {
-    final email = _emailController.text.trim();
-    if (email.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Enter your email to reset your password.')),
-      );
-      return;
-    }
-    try {
-      await FirebaseAuth.instance.sendPasswordResetEmail(email: email);
-      if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Password reset email sent to $email')),
-      );
-    } on FirebaseAuthException catch (e) {
-      if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(e.message ?? 'Could not send reset email.')),
-      );
-    }
+  Future<void> _promptForgotPassword() async {
+    // Pre-fill with whatever is in the login email field
+    _resetEmailController.text = _emailController.text.trim();
+    final emailRegex = RegExp(r'^[^@\s]+@[^@\s]+\.[^@\s]+$');
+
+    await showDialog(
+      context: context,
+      barrierDismissible: !_isSendingReset,
+      builder: (ctx) {
+        return StatefulBuilder(
+          builder: (ctx, setLocal) => AlertDialog(
+            backgroundColor: const Color(0xFF121212),
+            title: const Text('Reset password', style: TextStyle(color: Colors.white)),
+            content: TextField(
+              controller: _resetEmailController,
+              keyboardType: TextInputType.emailAddress,
+              style: const TextStyle(color: Colors.white),
+              decoration: InputDecoration(
+                labelText: 'Email',
+                labelStyle: TextStyle(color: Colors.grey[400]),
+                hintText: 'you@example.com',
+                hintStyle: TextStyle(color: Colors.grey[600]),
+                filled: true,
+                fillColor: const Color(0xFF1E1E1E),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide.none,
+                ),
+              ),
+            ),
+            actions: [
+              TextButton(
+                onPressed: _isSendingReset ? null : () => Navigator.of(ctx).pop(),
+                child: const Text('Cancel'),
+              ),
+              ElevatedButton(
+                onPressed: _isSendingReset
+                    ? null
+                    : () async {
+                        final email = _resetEmailController.text.trim();
+                        if (!emailRegex.hasMatch(email)) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(content: Text('Enter a valid email address.')),
+                          );
+                          return;
+                        }
+                        setLocal(() => _isSendingReset = true);
+                        try {
+                          await FirebaseAuth.instance.sendPasswordResetEmail(email: email);
+                          if (!mounted) return;
+                          // Generic success (avoids account enumeration)
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text('If an account exists for $email, a reset link was sent.')),
+                          );
+                          Navigator.of(ctx).pop(); // Close dialog on success
+                        } on FirebaseAuthException catch (e) {
+                          if (!mounted) return;
+                          // Keep messaging generic; special-case invalid-email
+                          String msg = 'If an account exists for that email, a reset link will be sent.';
+                          if (e.code == 'invalid-email') {
+                            msg = 'The email address is badly formatted.';
+                          }
+                          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(msg)));
+                        } catch (e) {
+                          if (mounted) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(content: Text('Error: ${e.toString()}')),
+                            );
+                          }
+                        } finally {
+                          setLocal(() => _isSendingReset = false);
+                        }
+                      },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.white,
+                  foregroundColor: Colors.black,
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                  elevation: 0,
+                ),
+                child: _isSendingReset
+                    ? const SizedBox(
+                        height: 18, width: 18, child: CircularProgressIndicator(strokeWidth: 2))
+                    : const Text('Send reset link'),
+              ),
+            ],
+          ),
+        );
+      },
+    );
   }
 
   Future<void> _login() async {
@@ -72,19 +146,13 @@ class _LoginScreenState extends State<LoginScreen> {
 
       final user = credential.user;
       if (user == null) {
-        throw FirebaseAuthException(
-          code: 'user-null',
-          message: 'User returned null after login',
-        );
+        throw FirebaseAuthException(code: 'user-null', message: 'User returned null after login');
       }
 
-      // 2) Read Firestore users/{uid}
-      final doc = await FirebaseFirestore.instance
-          .collection('users')
-          .doc(user.uid)
-          .get();
+      // Read Firestore users/{uid}
+      final doc = await FirebaseFirestore.instance.collection('users').doc(user.uid).get();
 
-      // ✅ Default route for **users** is now the customer dashboard
+      // Default route for users is the customer dashboard
       String nextRoute = '/home';
 
       if (doc.exists) {
@@ -93,8 +161,7 @@ class _LoginScreenState extends State<LoginScreen> {
         // Support your schema (email-keyed field) and standard fields
         final email = user.email ?? '';
         final nameField = (data['name'] as String?);
-        final nameByEmail =
-            (email.isNotEmpty && data.containsKey(email)) ? data[email] : null;
+        final nameByEmail = (email.isNotEmpty && data.containsKey(email)) ? data[email] : null;
 
         final hasName = (nameField is String && nameField.trim().isNotEmpty) ||
             (nameByEmail is String && nameByEmail.trim().isNotEmpty);
@@ -107,13 +174,8 @@ class _LoginScreenState extends State<LoginScreen> {
 
         // Route by accountType
         final accountType = (data['accountType'] as String?)?.toLowerCase();
-        if (accountType == 'business') {
-          nextRoute = '/business/home';
-        } else {
-          nextRoute = '/home'; // user → customer dashboard
-        }
+        nextRoute = (accountType == 'business') ? '/business/home' : '/home';
       } else {
-        // No profile doc → still take users to customer dashboard
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(content: Text('No user data found in Firestore.')),
@@ -147,9 +209,7 @@ class _LoginScreenState extends State<LoginScreen> {
           break;
       }
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(message)),
-        );
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
       }
     } catch (e) {
       if (mounted) {
@@ -267,11 +327,11 @@ class _LoginScreenState extends State<LoginScreen> {
 
                       const SizedBox(height: 15),
 
-                      // Forgot Password
+                      // Forgot Password (opens dialog)
                       Align(
                         alignment: Alignment.centerRight,
                         child: TextButton(
-                          onPressed: _isLoading ? null : _sendPasswordReset,
+                          onPressed: _isLoading ? null : _promptForgotPassword,
                           child: const Text(
                             'Forgot Password?',
                             style: TextStyle(
@@ -321,9 +381,8 @@ class _LoginScreenState extends State<LoginScreen> {
                             style: TextStyle(color: Colors.grey[600]),
                           ),
                           TextButton(
-                            onPressed: _isLoading
-                                ? null
-                                : () => Navigator.pushNamed(context, '/register'),
+                            onPressed:
+                                _isLoading ? null : () => Navigator.pushNamed(context, '/register'),
                             child: const Text(
                               'Sign Up',
                               style: TextStyle(

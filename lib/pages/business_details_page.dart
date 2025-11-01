@@ -396,7 +396,7 @@ class _BusinessDetailsPageState extends State<BusinessDetailsPage> {
                                         borderRadius: BorderRadius.circular(12),
                                       ),
                                       child: Text(
-                                        isActive ? 'Active' : 'Inactive',
+                                        isActive ? 'Active' : 'Not Available',
                                         style: TextStyle(
                                           color: isActive ? Colors.green[300] : Colors.grey[500],
                                           fontSize: 11,

@@ -46,8 +46,8 @@ class _ManageDealsPageState extends State<ManageDealsPage> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(nextIsActive ? 'Deal activated' : 'Deal deactivated'),
-          duration: const Duration(seconds: 1),
-          backgroundColor: Colors.grey[900],
+          duration: const Duration(seconds: 2),
+          backgroundColor: const Color.fromARGB(255, 255, 255, 255),
         ),
       );
     } catch (e) {
