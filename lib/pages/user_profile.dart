@@ -202,12 +202,10 @@ class _UserProfileState extends State<UserProfile> {
     required String uid,
     String? name,
     String? email,
-    String? phone,
   }) async {
     final update = <String, dynamic>{};
     if (name != null) update['name'] = name;
     if (email != null) update['email'] = email;
-    if (phone != null) update['phone'] = phone;
     if (update.isEmpty) return;
 
     await FirebaseFirestore.instance
@@ -279,11 +277,10 @@ class _UserProfileState extends State<UserProfile> {
 
     setState(() => _busy = true);
     try {
-      // v6: send verification link; the email changes after user confirms.
       await user.verifyBeforeUpdateEmail(newEmail);
       await _updateFirestoreProfile(uid: user.uid, email: newEmail);
 
-      await _fetchUserData(); // UI may still show old email until verified.
+      await _fetchUserData();
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -328,7 +325,7 @@ class _UserProfileState extends State<UserProfile> {
     }
   }
 
-  /// FIXED: single-dialog password flow to avoid nested dialog lifecycle issues.
+  /// Single-dialog password flow
   Future<void> _editPassword() async {
     final user = FirebaseAuth.instance.currentUser;
     if (user == null) return;
@@ -345,7 +342,6 @@ class _UserProfileState extends State<UserProfile> {
       return;
     }
 
-    // One dialog with BOTH fields
     final change = await showDialog<_PwdChange>(
       context: context,
       barrierDismissible: false,
@@ -449,7 +445,7 @@ class _UserProfileState extends State<UserProfile> {
       },
     );
 
-    if (!mounted || change == null) return; // cancelled or page disposed
+    if (!mounted || change == null) return;
 
     setState(() => _busy = true);
     try {
@@ -461,7 +457,6 @@ class _UserProfileState extends State<UserProfile> {
         );
       }
 
-      // Re-auth then update
       await _reauthenticateWithPassword(email, change.current);
       await user.updatePassword(change.next);
 
@@ -544,7 +539,7 @@ class _UserProfileState extends State<UserProfile> {
 
               const SizedBox(height: 30),
 
-              // User Info Section
+              // User Info Section (no phone)
               Container(
                 padding: const EdgeInsets.all(20),
                 decoration: BoxDecoration(
@@ -566,13 +561,6 @@ class _UserProfileState extends State<UserProfile> {
                       title: 'Email',
                       subtitle: _isLoading ? 'Loading...' : _userEmail,
                       onTap: disabled ? null : _editEmail,
-                    ),
-                    Divider(color: Colors.grey[800], height: 30),
-                    _buildProfileItem(
-                      icon: Icons.phone_outlined,
-                      title: 'Phone',
-                      subtitle: '+1 234 567 8900', // placeholder
-                      onTap: () {}, // add phone update flow when you store it
                     ),
                   ],
                 ),
@@ -609,7 +597,7 @@ class _UserProfileState extends State<UserProfile> {
 
               const SizedBox(height: 30),
 
-              // Edit Profile (full-screen editor later)
+              // Edit Profile (future)
               SizedBox(
                 width: double.infinity,
                 height: 56,

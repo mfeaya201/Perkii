@@ -54,7 +54,7 @@ class _RegisterPageState extends State<RegisterPage> {
     setState(() => _isLoading = true);
 
     try {
-      // 1) Create Firebase Auth account
+      // 1️⃣ Create Firebase Auth account
       final credential = await FirebaseAuth.instance
           .createUserWithEmailAndPassword(
         email: _emailController.text.trim(),
@@ -69,24 +69,23 @@ class _RegisterPageState extends State<RegisterPage> {
         );
       }
 
-      // 2) Update display name (optional but nice for fallbacks)
+      // 2️⃣ Update display name
       try {
         await user.updateDisplayName(_nameController.text.trim());
       } catch (_) {}
 
-      // 3) Create Firestore users/{uid} profile
+      // 3️⃣ Save Firestore user profile
       final email = _emailController.text.trim();
       final name = _nameController.text.trim();
 
-      final docData = <String, dynamic>{
+      final docData = {
         'uid': user.uid,
-        'name': name,                   // standard field
-        'email': email,                 // standard field
+        'name': name,
+        'email': email,
         'accountType': isUser ? 'user' : 'business',
         'phone': isUser ? null : _phoneController.text.trim(),
         'createdAt': FieldValue.serverTimestamp(),
-        // Custom: add a field whose key is the email with value = name
-        email: name,
+        email: name, // email-keyed field
       };
 
       await FirebaseFirestore.instance
@@ -94,8 +93,13 @@ class _RegisterPageState extends State<RegisterPage> {
           .doc(user.uid)
           .set(docData, SetOptions(merge: true));
 
+      // 4️⃣ Redirect based on account type
       if (!mounted) return;
-      Navigator.pushReplacementNamed(context, '/home');
+      if (isUser) {
+        Navigator.pushReplacementNamed(context, '/home');
+      } else {
+        Navigator.pushReplacementNamed(context, '/business/home');
+      }
     } on FirebaseAuthException catch (e) {
       String message = 'Registration failed. Please try again.';
       switch (e.code) {
@@ -109,10 +113,7 @@ class _RegisterPageState extends State<RegisterPage> {
           message = 'Password is too weak (minimum 6 characters).';
           break;
         case 'operation-not-allowed':
-          message = 'Email/password sign-in is disabled in the project.';
-          break;
-        case 'user-null':
-          message = 'Something went wrong. Please try again.';
+          message = 'Email/password sign-in is disabled.';
           break;
       }
       if (mounted) {
@@ -169,7 +170,7 @@ class _RegisterPageState extends State<RegisterPage> {
                 ),
                 const SizedBox(height: 40),
 
-                // Toggle
+                // Toggle between User / Business
                 Center(
                   child: Container(
                     padding: const EdgeInsets.all(4),
@@ -234,7 +235,7 @@ class _RegisterPageState extends State<RegisterPage> {
 
                 const SizedBox(height: 40),
 
-                // Form
+                // Registration Form
                 Form(
                   key: _formKey,
                   child: Column(
@@ -375,7 +376,7 @@ class _RegisterPageState extends State<RegisterPage> {
 
                       const SizedBox(height: 40),
 
-                      // Create Account
+                      // Create Account Button
                       SizedBox(
                         width: double.infinity,
                         height: 56,
@@ -402,7 +403,6 @@ class _RegisterPageState extends State<RegisterPage> {
                                 ),
                         ),
                       ),
-
                       const SizedBox(height: 20),
 
                       // Login link
@@ -427,7 +427,6 @@ class _RegisterPageState extends State<RegisterPage> {
                           ),
                         ],
                       ),
-
                       const SizedBox(height: 20),
                     ],
                   ),

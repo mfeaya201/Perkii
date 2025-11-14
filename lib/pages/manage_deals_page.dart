@@ -125,12 +125,7 @@ class _ManageDealsPageState extends State<ManageDealsPage> {
           'Manage Deals',
           style: TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.w600),
         ),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.add_circle_outline, color: Colors.white),
-            onPressed: () => Navigator.pushNamed(context, '/business/create-deal'),
-          ),
-        ],
+        
       ),
 
       body: StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
