@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-/// Small holder used by the single password-change dialog
+
 class _PwdChange {
   final String current;
   final String next;
@@ -115,7 +115,7 @@ class _UserProfileState extends State<UserProfile> {
     }
   }
 
-  // ---------- Dialog helpers (kept for name/email prompts) ----------
+  
 
   Future<String?> _promptText({
     required String title,
@@ -220,12 +220,12 @@ class _UserProfileState extends State<UserProfile> {
     await user.reauthenticateWithCredential(cred);
   }
 
-  /// In auth v6, use providerData to detect if the 'password' provider is linked.
+  
   bool _usesEmailPassword(User user) {
     return user.providerData.any((p) => p.providerId == 'password');
   }
 
-  // ---------- Edit Name / Email / Password ----------
+  
 
   Future<void> _editName() async {
     final user = FirebaseAuth.instance.currentUser;
@@ -325,7 +325,7 @@ class _UserProfileState extends State<UserProfile> {
     }
   }
 
-  /// Single-dialog password flow
+  
   Future<void> _editPassword() async {
     final user = FirebaseAuth.instance.currentUser;
     if (user == null) return;
@@ -513,7 +513,7 @@ class _UserProfileState extends State<UserProfile> {
             children: [
               const SizedBox(height: 20),
 
-              // Profile Picture (static placeholder)
+              
               Stack(
                 children: [
                   CircleAvatar(
@@ -539,7 +539,7 @@ class _UserProfileState extends State<UserProfile> {
 
               const SizedBox(height: 30),
 
-              // User Info Section (no phone)
+              
               Container(
                 padding: const EdgeInsets.all(20),
                 decoration: BoxDecoration(
@@ -568,7 +568,7 @@ class _UserProfileState extends State<UserProfile> {
 
               const SizedBox(height: 20),
 
-              // Security Section
+              
               Container(
                 padding: const EdgeInsets.all(20),
                 decoration: BoxDecoration(
@@ -589,7 +589,7 @@ class _UserProfileState extends State<UserProfile> {
                       icon: Icons.security_outlined,
                       title: 'Two-Factor Authentication',
                       subtitle: 'Enabled',
-                      onTap: () {}, // implement when you add 2FA
+                      onTap: () {}, 
                     ),
                   ],
                 ),
@@ -597,7 +597,7 @@ class _UserProfileState extends State<UserProfile> {
 
               const SizedBox(height: 30),
 
-              // Edit Profile (future)
+              
               SizedBox(
                 width: double.infinity,
                 height: 56,
@@ -615,7 +615,7 @@ class _UserProfileState extends State<UserProfile> {
 
               const SizedBox(height: 15),
 
-              // Logout
+              
               SizedBox(
                 width: double.infinity,
                 height: 56,

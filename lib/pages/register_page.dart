@@ -10,7 +10,7 @@ class RegisterPage extends StatefulWidget {
 }
 
 class _RegisterPageState extends State<RegisterPage> {
-  bool isUser = true; // true = User, false = Business
+  bool isUser = true; 
   bool _obscurePassword = true;
   bool _isLoading = false;
 
@@ -54,7 +54,7 @@ class _RegisterPageState extends State<RegisterPage> {
     setState(() => _isLoading = true);
 
     try {
-      // 1️⃣ Create Firebase Auth account
+    
       final credential = await FirebaseAuth.instance
           .createUserWithEmailAndPassword(
         email: _emailController.text.trim(),
@@ -69,12 +69,12 @@ class _RegisterPageState extends State<RegisterPage> {
         );
       }
 
-      // 2️⃣ Update display name
+      
       try {
         await user.updateDisplayName(_nameController.text.trim());
       } catch (_) {}
 
-      // 3️⃣ Save Firestore user profile
+      
       final email = _emailController.text.trim();
       final name = _nameController.text.trim();
 
@@ -85,7 +85,7 @@ class _RegisterPageState extends State<RegisterPage> {
         'accountType': isUser ? 'user' : 'business',
         'phone': isUser ? null : _phoneController.text.trim(),
         'createdAt': FieldValue.serverTimestamp(),
-        email: name, // email-keyed field
+        email: name, 
       };
 
       await FirebaseFirestore.instance
@@ -93,7 +93,7 @@ class _RegisterPageState extends State<RegisterPage> {
           .doc(user.uid)
           .set(docData, SetOptions(merge: true));
 
-      // 4️⃣ Redirect based on account type
+      
       if (!mounted) return;
       if (isUser) {
         Navigator.pushReplacementNamed(context, '/home');
@@ -170,7 +170,7 @@ class _RegisterPageState extends State<RegisterPage> {
                 ),
                 const SizedBox(height: 40),
 
-                // Toggle between User / Business
+              
                 Center(
                   child: Container(
                     padding: const EdgeInsets.all(4),
@@ -235,12 +235,12 @@ class _RegisterPageState extends State<RegisterPage> {
 
                 const SizedBox(height: 40),
 
-                // Registration Form
+                
                 Form(
                   key: _formKey,
                   child: Column(
                     children: [
-                      // Name / Business Name
+                    
                       TextFormField(
                         controller: _nameController,
                         style: const TextStyle(color: Colors.white),
@@ -274,7 +274,7 @@ class _RegisterPageState extends State<RegisterPage> {
                       ),
                       const SizedBox(height: 20),
 
-                      // Email
+                      
                       TextFormField(
                         controller: _emailController,
                         keyboardType: TextInputType.emailAddress,
@@ -304,7 +304,7 @@ class _RegisterPageState extends State<RegisterPage> {
                       ),
                       const SizedBox(height: 20),
 
-                      // Phone (business only)
+                    
                       if (!isUser) ...[
                         TextFormField(
                           controller: _phoneController,
@@ -335,7 +335,7 @@ class _RegisterPageState extends State<RegisterPage> {
                         const SizedBox(height: 20),
                       ],
 
-                      // Password
+                      
                       TextFormField(
                         controller: _passwordController,
                         obscureText: _obscurePassword,
@@ -376,7 +376,7 @@ class _RegisterPageState extends State<RegisterPage> {
 
                       const SizedBox(height: 40),
 
-                      // Create Account Button
+                      
                       SizedBox(
                         width: double.infinity,
                         height: 56,
@@ -405,7 +405,7 @@ class _RegisterPageState extends State<RegisterPage> {
                       ),
                       const SizedBox(height: 20),
 
-                      // Login link
+                    
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [

@@ -1,4 +1,4 @@
-// lib/main.dart
+
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -6,7 +6,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 import 'firebase_options.dart';
 
-// Pages
+
 import 'package:perkii/pages/home_page.dart';
 import 'package:perkii/pages/onboarding_page.dart';
 import 'package:perkii/pages/login_screen.dart';
@@ -23,7 +23,7 @@ import 'package:perkii/pages/edit_deal_page.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Initialize Firebase BEFORE runApp
+  
   try {
     if (Firebase.apps.isEmpty) {
       await Firebase.initializeApp(
@@ -32,7 +32,7 @@ Future<void> main() async {
       debugPrint('[main] Firebase initialized');
     }
   } catch (e) {
-    // Ignore duplicate-app errors on hot reload, rethrow others
+    
     final msg = e.toString().toLowerCase();
     if (!msg.contains('duplicate-app') &&
         !msg.contains('already exists')) {
@@ -81,10 +81,10 @@ class MyApp extends StatelessWidget {
         ),
       ),
 
-      // Landing is decided by auth + Firestore role
+      
       home: const RoleGate(),
 
-      // Static routes that don't need dynamic arguments
+    
       routes: {
         '/onboarding': (context) => const OnBoard(),
         '/login': (context) => const LoginScreen(),
@@ -99,7 +99,7 @@ class MyApp extends StatelessWidget {
         '/business/edit-deal': (context) => const EditDealPage(),
       },
 
-      // Dynamic routes that require arguments
+      
       onGenerateRoute: (settings) {
         if (settings.name == '/business-details') {
           final args = (settings.arguments is Map)
@@ -113,7 +113,7 @@ class MyApp extends StatelessWidget {
               (args['businessIndex'] is int) ? args['businessIndex'] as int : 0;
 
           if (businessId == null || businessId.isEmpty) {
-            // Guard page if required arg missing
+          
             return MaterialPageRoute(
               builder: (_) => const Scaffold(
                 backgroundColor: Colors.black,
@@ -139,10 +139,7 @@ class MyApp extends StatelessWidget {
   }
 }
 
-/// Decides which screen to show on app start:
-/// - Not logged in → OnBoard (landing)
-/// - Logged in + accountType == 'business' → BusinessHomeDashboard
-/// - Otherwise (users/unknown) → OnBoard (or change to HomePage if you prefer)
+
 class RoleGate extends StatelessWidget {
   const RoleGate({super.key});
 
@@ -167,8 +164,8 @@ class RoleGate extends StatelessWidget {
       if (accountType == 'business') {
         return const BusinessHomeDashboard();
       }
-      // Landing for all non-business accounts
-      // If you want regular users to see HomePage instead, return const HomePage();
+    
+      
       return const OnBoard();
     } catch (e) {
       debugPrint('[RoleGate] Error reading role: $e → OnBoard (fallback)');
@@ -178,7 +175,7 @@ class RoleGate extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // React to auth state (e.g., logout/login while app is open)
+    
     return StreamBuilder<User?>(
       stream: FirebaseAuth.instance.authStateChanges(),
       builder: (context, snap) {

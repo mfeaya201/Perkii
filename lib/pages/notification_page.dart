@@ -13,7 +13,7 @@ class _NotificationPageState extends State<NotificationPage> {
   int _selectedIndex = 2;
 
   Query<Map<String, dynamic>> _dealQuery() {
-    // Simplified query to avoid index errors
+    
     return FirebaseFirestore.instance
         .collection('deals')
         .orderBy('createdAt', descending: true)
@@ -77,7 +77,7 @@ class _NotificationPageState extends State<NotificationPage> {
             );
           }
 
-          // ✅ Filter active deals safely in Dart instead of in Firestore
+          
           final allDocs = snapshot.data?.docs ?? [];
           final docs = allDocs.where((d) {
             final data = d.data();

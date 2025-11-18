@@ -50,10 +50,10 @@ class _CreateDealPageState extends State<CreateDealPage> {
         'businessId': user.uid,
         'title': title,
         'description': description,
-        'points': points, // int
-        'isActive': _isActive, // bool
+        'points': points, 
+        'isActive': _isActive, 
         'status': _isActive ? 'active' : 'inactive',
-        'views': 0, // int
+        'views': 0, 
         'createdAt': FieldValue.serverTimestamp(),
       });
 
@@ -141,7 +141,7 @@ class _CreateDealPageState extends State<CreateDealPage> {
                   ),
                   const SizedBox(height: 20),
 
-                  // Description
+                  
                   Text('Description',
                       style: TextStyle(
                         color: Colors.grey[500],
@@ -160,7 +160,7 @@ class _CreateDealPageState extends State<CreateDealPage> {
                   ),
                   const SizedBox(height: 20),
 
-                  // Points
+                  
                   Text('Points Required',
                       style: TextStyle(
                         color: Colors.grey[500],
@@ -184,7 +184,7 @@ class _CreateDealPageState extends State<CreateDealPage> {
                   ),
                   const SizedBox(height: 25),
 
-                  // Active toggle
+                  
                   Container(
                     padding: const EdgeInsets.all(20),
                     decoration: BoxDecoration(
@@ -220,7 +220,7 @@ class _CreateDealPageState extends State<CreateDealPage> {
                   ),
                   const SizedBox(height: 40),
 
-                  // Create Button
+                  
                   SizedBox(
                     width: double.infinity,
                     height: 56,
@@ -248,7 +248,7 @@ class _CreateDealPageState extends State<CreateDealPage> {
                   ),
                   const SizedBox(height: 15),
 
-                  // Cancel Button
+                  
                   SizedBox(
                     width: double.infinity,
                     height: 56,

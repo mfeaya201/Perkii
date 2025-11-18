@@ -24,7 +24,7 @@ class _ManageDealsPageState extends State<ManageDealsPage> {
     if (user == null) {
       return const Stream<QuerySnapshot<Map<String, dynamic>>>.empty();
     }
-    // ❌ No orderBy here → avoids composite index requirement.
+    
     return FirebaseFirestore.instance
         .collection('deals')
         .where('businessId', isEqualTo: user.uid)
@@ -147,7 +147,7 @@ class _ManageDealsPageState extends State<ManageDealsPage> {
             );
           }
 
-          // Filter to kind == 'deal' and sort by createdAt DESC in Dart
+          
           final docs = (snapshot.data?.docs ?? [])
               .where((d) => (d.data()['kind'] ?? 'deal') == 'deal')
               .toList()
@@ -156,7 +156,7 @@ class _ManageDealsPageState extends State<ManageDealsPage> {
               final bTs = b.data()['createdAt'];
               final aMicros = aTs is Timestamp ? aTs.microsecondsSinceEpoch : -1;
               final bMicros = bTs is Timestamp ? bTs.microsecondsSinceEpoch : -1;
-              return bMicros.compareTo(aMicros); // newest first
+              return bMicros.compareTo(aMicros); 
             });
 
           if (docs.isEmpty) {

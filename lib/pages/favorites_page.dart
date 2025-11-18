@@ -21,13 +21,13 @@ class _FavoritesPageState extends State<FavoritesPage> {
     }
   }
 
-  // ---- Streams & fetchers ----
+  
 
-  /// Stream the current user's favorites subcollection.
+  
   Stream<QuerySnapshot<Map<String, dynamic>>> _favoritesStream() {
     final uid = FirebaseAuth.instance.currentUser?.uid;
     if (uid == null) {
-      // empty stream if not signed in
+      
       return const Stream<QuerySnapshot<Map<String, dynamic>>>.empty();
     }
     return FirebaseFirestore.instance
@@ -38,14 +38,14 @@ class _FavoritesPageState extends State<FavoritesPage> {
         .snapshots();
   }
 
-  /// Fetch a batch of business docs by their ids (chunked by 10 due to whereIn limit).
+  
   Future<List<QueryDocumentSnapshot<Map<String, dynamic>>>> _fetchBusinessesByIds(
     List<String> ids,
   ) async {
     if (ids.isEmpty) return const [];
     final col = FirebaseFirestore.instance.collection('users');
 
-    // Chunk by 10 (Firestore in operator max)
+    
     final List<QueryDocumentSnapshot<Map<String, dynamic>>> out = [];
     for (var i = 0; i < ids.length; i += 10) {
       final chunk = ids.sublist(i, i + 10 > ids.length ? ids.length : i + 10);
@@ -55,7 +55,7 @@ class _FavoritesPageState extends State<FavoritesPage> {
     return out;
   }
 
-  /// Remove a favorite by its favorite doc id (in users/{uid}/favorites/{favId}).
+  
   Future<void> _removeFavoriteByFavDocId(String favDocId) async {
     final uid = FirebaseAuth.instance.currentUser?.uid;
     if (uid == null) return;
@@ -67,7 +67,7 @@ class _FavoritesPageState extends State<FavoritesPage> {
         .delete();
   }
 
-  /// Remove a favorite by businessId (if you don’t have the fav doc id handy).
+  
   Future<void> _removeFavoriteByBusinessId(String businessId) async {
     final uid = FirebaseAuth.instance.currentUser?.uid;
     if (uid == null) return;
@@ -82,7 +82,7 @@ class _FavoritesPageState extends State<FavoritesPage> {
     }
   }
 
-  // ---- UI helpers ----
+  
 
   Widget _emptyState() {
     return Center(
@@ -153,7 +153,7 @@ class _FavoritesPageState extends State<FavoritesPage> {
           final favDocs = favSnap.data?.docs ?? [];
           if (favDocs.isEmpty) return _emptyState();
 
-          // Collect businessIds and map favDocId -> businessId for later remove button
+          
           final businessIds = <String>[];
           final favDocByBusinessId = <String, String>{};
           for (final d in favDocs) {
@@ -180,8 +180,8 @@ class _FavoritesPageState extends State<FavoritesPage> {
               final bizDocs = bizSnap.data ?? [];
               if (bizDocs.isEmpty) return _emptyState();
 
-              // Maintain the order: by favourites' addedAt (already ordered desc)
-              // We’ll reorder bizDocs according to businessIds array.
+              
+    
               final byId = {for (final d in bizDocs) d.id: d};
               final ordered = businessIds
                   .map((id) => byId[id])
@@ -209,8 +209,8 @@ class _FavoritesPageState extends State<FavoritesPage> {
                         arguments: {
                           'businessId': businessId,
                           'businessName': businessName,
-                          // businessIndex is only used by your old FavoritesManager;
-                          // pass 0 or remove if not needed anymore.
+                        
+                          
                           'businessIndex': 0,
                         },
                       );
@@ -225,7 +225,7 @@ class _FavoritesPageState extends State<FavoritesPage> {
                       ),
                       child: Row(
                         children: [
-                          // Logo or placeholder
+                          
                           Container(
                             width: 60,
                             height: 60,
@@ -244,7 +244,7 @@ class _FavoritesPageState extends State<FavoritesPage> {
                                 : null,
                           ),
                           const SizedBox(width: 15),
-                          // Name + subtitle
+                        
                           Expanded(
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
@@ -269,7 +269,7 @@ class _FavoritesPageState extends State<FavoritesPage> {
                               ],
                             ),
                           ),
-                          // Unfavorite button
+                          
                           IconButton(
                             tooltip: 'Remove from favorites',
                             onPressed: () async {

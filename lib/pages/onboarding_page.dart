@@ -20,7 +20,7 @@ class _OnBoardState extends State<OnBoard> {
             children: [
               Spacer(flex: 2),
               
-              // Logo/Brand
+              
               Center(
                 child: Container(
                   width: 80,
@@ -44,7 +44,7 @@ class _OnBoardState extends State<OnBoard> {
               
               SizedBox(height: 40),
               
-              // App Name
+              
               Center(
                 child: Text(
                   'Perkii',
@@ -59,7 +59,7 @@ class _OnBoardState extends State<OnBoard> {
               
               Spacer(flex: 1),
               
-              // Main Heading
+              
               Text(
                 'Rewards Made\nSimple',
                 style: TextStyle(
@@ -72,7 +72,7 @@ class _OnBoardState extends State<OnBoard> {
               
               SizedBox(height: 20),
               
-              // Subheading
+              
               Text(
                 'Join the loyalty rewards world and start earning perks with every purchase.',
                 style: TextStyle(
@@ -85,7 +85,7 @@ class _OnBoardState extends State<OnBoard> {
               
               Spacer(flex: 2),
               
-              // Get Started Button
+              
               SizedBox(
                 width: double.infinity,
                 height: 56,
@@ -113,7 +113,7 @@ class _OnBoardState extends State<OnBoard> {
               
               SizedBox(height: 15),
               
-              // Sign In Button
+              
               SizedBox(
                 width: double.infinity,
                 height: 56,

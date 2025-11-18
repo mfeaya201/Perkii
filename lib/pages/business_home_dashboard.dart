@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'business_details_page.dart'; // import your BusinessDetailsPage
+import 'business_details_page.dart'; 
 
 class BusinessHomeDashboard extends StatefulWidget {
   const BusinessHomeDashboard({super.key});
@@ -55,7 +55,7 @@ class _BusinessHomeDashboardState extends State<BusinessHomeDashboard> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.black,
-      // No back button on this page
+      
       appBar: AppBar(
         automaticallyImplyLeading: false,
         backgroundColor: Colors.black,
@@ -130,7 +130,7 @@ class _BusinessHomeDashboardState extends State<BusinessHomeDashboard> {
                   ),
                   const SizedBox(height: 30),
 
-                  // Stats
+                
                   Row(
                     children: [
                       Expanded(
@@ -160,7 +160,7 @@ class _BusinessHomeDashboardState extends State<BusinessHomeDashboard> {
 
                   const SizedBox(height: 30),
 
-                  // Quick Actions
+                  
                   const Text(
                     'Quick Actions',
                     style: TextStyle(
@@ -222,10 +222,10 @@ class _BusinessHomeDashboardState extends State<BusinessHomeDashboard> {
     );
   }
 
-  // ---------- UI helpers ----------
+  
   Widget _buildStatCard(String label, String value, IconData icon, {bool fullWidth = false}) {
     return Container(
-      padding: const EdgeInsets.all(20), // fixed
+      padding: const EdgeInsets.all(20), 
       width: fullWidth ? double.infinity : null,
       decoration: BoxDecoration(
         color: Colors.grey[900],

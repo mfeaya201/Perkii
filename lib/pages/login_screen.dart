@@ -14,7 +14,7 @@ class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
-  // Forgot-password dialog controller/state
+  
   final TextEditingController _resetEmailController = TextEditingController();
   bool _isSendingReset = false;
 
@@ -42,7 +42,7 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   Future<void> _promptForgotPassword() async {
-    // Pre-fill with whatever is in the login email field
+    
     _resetEmailController.text = _emailController.text.trim();
     final emailRegex = RegExp(r'^[^@\s]+@[^@\s]+\.[^@\s]+$');
 
@@ -91,14 +91,14 @@ class _LoginScreenState extends State<LoginScreen> {
                         try {
                           await FirebaseAuth.instance.sendPasswordResetEmail(email: email);
                           if (!mounted) return;
-                          // Generic success (avoids account enumeration)
+                          
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(content: Text('If an account exists for $email, a reset link was sent.')),
                           );
-                          Navigator.of(ctx).pop(); // Close dialog on success
+                          Navigator.of(ctx).pop(); 
                         } on FirebaseAuthException catch (e) {
                           if (!mounted) return;
-                          // Keep messaging generic; special-case invalid-email
+                          
                           String msg = 'If an account exists for that email, a reset link will be sent.';
                           if (e.code == 'invalid-email') {
                             msg = 'The email address is badly formatted.';
@@ -138,7 +138,7 @@ class _LoginScreenState extends State<LoginScreen> {
     setState(() => _isLoading = true);
 
     try {
-      // Firebase email/password sign-in
+      
       final credential = await FirebaseAuth.instance.signInWithEmailAndPassword(
         email: _emailController.text.trim(),
         password: _passwordController.text.trim(),
@@ -149,16 +149,16 @@ class _LoginScreenState extends State<LoginScreen> {
         throw FirebaseAuthException(code: 'user-null', message: 'User returned null after login');
       }
 
-      // Read Firestore users/{uid}
+      
       final doc = await FirebaseFirestore.instance.collection('users').doc(user.uid).get();
 
-      // Default route for users is the customer dashboard
+      
       String nextRoute = '/home';
 
       if (doc.exists) {
         final data = doc.data() ?? {};
 
-        // Support your schema (email-keyed field) and standard fields
+        
         final email = user.email ?? '';
         final nameField = (data['name'] as String?);
         final nameByEmail = (email.isNotEmpty && data.containsKey(email)) ? data[email] : null;
@@ -172,7 +172,7 @@ class _LoginScreenState extends State<LoginScreen> {
           );
         }
 
-        // Route by accountType
+    
         final accountType = (data['accountType'] as String?)?.toLowerCase();
         nextRoute = (accountType == 'business') ? '/business/home' : '/home';
       } else {
@@ -292,7 +292,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                       const SizedBox(height: 20),
 
-                      // Password Field
+                      
                       TextFormField(
                         controller: _passwordController,
                         obscureText: _obscurePassword,
@@ -327,7 +327,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
                       const SizedBox(height: 15),
 
-                      // Forgot Password (opens dialog)
+                      
                       Align(
                         alignment: Alignment.centerRight,
                         child: TextButton(
@@ -344,7 +344,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
                       const SizedBox(height: 30),
 
-                      // Login Button
+                
                       SizedBox(
                         width: double.infinity,
                         height: 56,
@@ -372,7 +372,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
                       const SizedBox(height: 20),
 
-                      // Register Link
+                      
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [

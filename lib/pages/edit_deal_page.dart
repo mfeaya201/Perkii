@@ -38,7 +38,7 @@ class _EditDealPageState extends State<EditDealPage> {
 
   void _updateDeal() {
     if (_formKey.currentState!.validate()) {
-      // TODO: Update in Firebase
+      
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('Deal updated successfully!'),
@@ -96,7 +96,7 @@ class _EditDealPageState extends State<EditDealPage> {
                 ),
                 SizedBox(height: 30),
 
-                // Deal Title
+                
                 Text(
                   'Deal Title',
                   style: TextStyle(
@@ -131,7 +131,7 @@ class _EditDealPageState extends State<EditDealPage> {
 
                 SizedBox(height: 20),
 
-                // Description
+                
                 Text(
                   'Description',
                   style: TextStyle(
@@ -167,7 +167,7 @@ class _EditDealPageState extends State<EditDealPage> {
 
                 SizedBox(height: 20),
 
-                // Points Required
+                
                 Text(
                   'Points Required',
                   style: TextStyle(
@@ -210,7 +210,7 @@ class _EditDealPageState extends State<EditDealPage> {
 
                 SizedBox(height: 25),
 
-                // Active Toggle
+                
                 Container(
                   padding: EdgeInsets.all(20),
                   decoration: BoxDecoration(
@@ -258,7 +258,7 @@ class _EditDealPageState extends State<EditDealPage> {
 
                 SizedBox(height: 40),
 
-                // Update Button
+                
                 SizedBox(
                   width: double.infinity,
                   height: 56,
@@ -284,7 +284,7 @@ class _EditDealPageState extends State<EditDealPage> {
 
                 SizedBox(height: 15),
 
-                // Cancel Button
+                
                 SizedBox(
                   width: double.infinity,
                   height: 56,

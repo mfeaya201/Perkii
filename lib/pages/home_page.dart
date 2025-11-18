@@ -79,7 +79,7 @@ class _HomePageState extends State<HomePage> {
           return ListView(
             padding: const EdgeInsets.only(bottom: 24),
             children: [
-              // Top card
+              
               Container(
                 margin: const EdgeInsets.all(20),
                 height: 200,
@@ -115,7 +115,7 @@ class _HomePageState extends State<HomePage> {
                 ),
               ),
 
-              // Section title
+              
               const Padding(
                 padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
                 child: Text(
@@ -146,7 +146,7 @@ class _HomePageState extends State<HomePage> {
                   ),
                 ),
 
-              // Business cards
+              
               ...List.generate(bizDocs.length, (index) {
                 final doc = bizDocs[index];
                 final data = doc.data();
@@ -178,7 +178,7 @@ class _HomePageState extends State<HomePage> {
                     ),
                     child: Row(
                       children: [
-                        // Logo / placeholder
+                        
                         Container(
                           width: 60,
                           height: 60,
@@ -199,13 +199,13 @@ class _HomePageState extends State<HomePage> {
                         ),
                         const SizedBox(width: 15),
 
-                        // Name + hint
+                        
                         Expanded(
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: const [
-                              // We fill real name and hint below using a Builder to
-                              // keep const analysis happy (or you can inline directly).
+                              
+                              
                             ],
                           ),
                         ),
@@ -257,9 +257,9 @@ class _HomePageState extends State<HomePage> {
 }
 
 extension _CardHelpers on Widget {
-  /// Safely injects name + hint into the business row without runtime casting.
+  
   Widget _rowWithName(String name) {
-    // Build the same container but with inline name/hint to avoid risky casting.
+    
     if (this is! GestureDetector) return this;
     final g = this as GestureDetector;
     if (g.child is! Container) return this;

@@ -3,9 +3,9 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 class BusinessDetailsPage extends StatefulWidget {
-  final String businessId; // required (users/{businessId})
+  final String businessId; 
   final String businessName;
-  final int businessIndex; // kept for compatibility
+  final int businessIndex; 
 
   const BusinessDetailsPage({
     super.key,
@@ -21,11 +21,11 @@ class BusinessDetailsPage extends StatefulWidget {
 class _BusinessDetailsPageState extends State<BusinessDetailsPage> {
   bool _busy = false;
 
-  // -------- OWNER CHECK --------
+ 
   bool get _isOwner =>
       FirebaseAuth.instance.currentUser?.uid == widget.businessId;
 
-  // -------------------- Favorites (Firestore) --------------------
+  
   Stream<bool> _isFavoritedStream() {
     final uid = FirebaseAuth.instance.currentUser?.uid;
     if (uid == null) return Stream<bool>.value(false);
@@ -93,7 +93,7 @@ class _BusinessDetailsPageState extends State<BusinessDetailsPage> {
     }
   }
 
-  // -------------------- Business profile stream --------------------
+  
   Stream<DocumentSnapshot<Map<String, dynamic>>> _businessProfile() {
     return FirebaseFirestore.instance
         .collection('users')
@@ -101,7 +101,6 @@ class _BusinessDetailsPageState extends State<BusinessDetailsPage> {
         .snapshots();
   }
 
-  // -------------------- Deals listing --------------------
   Stream<QuerySnapshot<Map<String, dynamic>>> _dealsForBusiness() {
     return FirebaseFirestore.instance
         .collection('deals')
@@ -110,7 +109,7 @@ class _BusinessDetailsPageState extends State<BusinessDetailsPage> {
         .snapshots();
   }
 
-  // -------------------- Redeem logic --------------------
+  
   Future<void> _redeemDeal({
     required String dealId,
     required String title,
@@ -175,7 +174,7 @@ class _BusinessDetailsPageState extends State<BusinessDetailsPage> {
     }
   }
 
-  // -------------------- Edit helpers --------------------
+  
   Future<String?> _promptText({
     required String title,
     String initial = '',
@@ -347,7 +346,7 @@ class _BusinessDetailsPageState extends State<BusinessDetailsPage> {
     }
   }
 
-  // -------------------- Logout (bottom button) --------------------
+  
   Future<void> _confirmAndLogout() async {
     if (!_isOwner || _busy) return;
     final shouldLogout = await showDialog<bool>(
@@ -389,7 +388,7 @@ class _BusinessDetailsPageState extends State<BusinessDetailsPage> {
     }
   }
 
-  // -------------------- UI helpers --------------------
+ 
   void _toast(String msg,
       {bool error = false, bool warn = false, bool success = false}) {
     final color = error
@@ -460,7 +459,7 @@ class _BusinessDetailsPageState extends State<BusinessDetailsPage> {
     );
   }
 
-  // -------------------- BUILD --------------------
+  
   @override
   Widget build(BuildContext context) {
     final showSpinner = _busy;
@@ -482,7 +481,7 @@ class _BusinessDetailsPageState extends State<BusinessDetailsPage> {
             fontWeight: FontWeight.w600,
           ),
         ),
-        // NOTE: Removed the power icon. Keeping favorites icon only.
+        
         actions: [
           if (showSpinner)
             const Padding(
@@ -511,12 +510,12 @@ class _BusinessDetailsPageState extends State<BusinessDetailsPage> {
         ],
       ),
 
-      // ----- BODY -----
+      
       body: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // ---------- Header ----------
+            
             Container(
               margin: const EdgeInsets.all(20),
               padding: const EdgeInsets.all(30),
@@ -553,7 +552,7 @@ class _BusinessDetailsPageState extends State<BusinessDetailsPage> {
               ),
             ),
 
-            // ---------- Business Info (editable if owner) ----------
+            
             StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
               stream: _businessProfile(),
               builder: (context, snap) {
@@ -617,7 +616,7 @@ class _BusinessDetailsPageState extends State<BusinessDetailsPage> {
 
             const SizedBox(height: 20),
 
-            // ---------- Deals Heading ----------
+            
             const Padding(
               padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
               child: Text(
@@ -627,7 +626,7 @@ class _BusinessDetailsPageState extends State<BusinessDetailsPage> {
               ),
             ),
 
-            // ---------- Deals list ----------
+            
             StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
               stream: _dealsForBusiness(),
               builder: (context, snapshot) {
@@ -816,7 +815,7 @@ class _BusinessDetailsPageState extends State<BusinessDetailsPage> {
 
             const SizedBox(height: 24),
 
-            // ---------- BOTTOM LOG OUT BUTTON ----------
+            
             if (_isOwner)
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 20),
